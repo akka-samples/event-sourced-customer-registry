@@ -11,7 +11,6 @@ import customer.domain.CustomerEvent.AddressChanged;
 import customer.domain.CustomerEvent.CustomerCreated;
 import customer.domain.CustomerEvent.NameChanged;
 
-// tag::producer[]
 @ComponentId("customer-events-service")
 @Consume.FromEventSourcedEntity(CustomerEntity.class) // <1>
 @Produce.ServiceStream(id = "customer_events") // <2>
@@ -28,4 +27,3 @@ public class CustomerEvents extends Consumer {
     };
   }
 }
-// end::producer[]

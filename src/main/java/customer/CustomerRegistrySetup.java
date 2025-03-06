@@ -8,22 +8,16 @@ import org.slf4j.LoggerFactory;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES;
 
-// tag::object-mapper[]
 @Setup
 public class CustomerRegistrySetup implements ServiceSetup {
-  // end::object-mapper[]
 
   private static final Logger logger = LoggerFactory.getLogger(CustomerRegistrySetup.class);
 
-  // tag::object-mapper[]
 
   @Override
   public void onStartup() {
-    // end::object-mapper[]
     logger.info("Starting Akka Application");
-    // tag::object-mapper[]
       JsonSupport.getObjectMapper()
             .configure(FAIL_ON_NULL_CREATOR_PROPERTIES, true); // <1>
   }
 }
-// end::object-mapper[]
