@@ -6,8 +6,6 @@ import akka.javasdk.JsonMigration;
 
 import java.util.List;
 
-// tag::address-changed-migration[]
-// tag::name-migration[]
 public class AddressChangedMigration extends JsonMigration {
 
   @Override
@@ -15,15 +13,12 @@ public class AddressChangedMigration extends JsonMigration {
     return 1;
   }
 
-  // end::address-changed-migration[]
 
   @Override
   public List<String> supportedClassNames() {
     return List.of("customer.domain.CustomerEvent$OldAddressChanged"); // <1>
   }
 
-  // end::name-migration[]
-  // tag::address-changed-migration[]
   @Override
   public JsonNode transform(int fromVersion, JsonNode json) {
     if (fromVersion < 1) {
@@ -34,7 +29,4 @@ public class AddressChangedMigration extends JsonMigration {
     }
     return json;
   }
-// tag::name-migration[]
 }
-// end::name-migration[]
-// end::address-changed-migration[]

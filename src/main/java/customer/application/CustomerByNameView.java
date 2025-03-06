@@ -1,6 +1,5 @@
 package customer.application;
 
-// tag::class[]
 
 import akka.javasdk.annotations.ComponentId;
 import akka.javasdk.annotations.Consume;
@@ -37,4 +36,3 @@ public class CustomerByNameView extends View {
   }
 
 }
-// end::class[]

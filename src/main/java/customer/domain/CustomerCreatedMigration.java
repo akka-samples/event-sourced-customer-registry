@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import akka.javasdk.JsonMigration;
 
-// tag::customer-created-migration[]
 public class CustomerCreatedMigration extends JsonMigration {
 
   @Override
@@ -25,4 +24,3 @@ public class CustomerCreatedMigration extends JsonMigration {
     return json;
   }
 }
-// end::customer-created-migration[]

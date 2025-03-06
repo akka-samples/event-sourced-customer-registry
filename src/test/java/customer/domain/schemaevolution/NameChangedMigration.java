@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import akka.javasdk.JsonMigration;
 
 
-// tag::name-changed-migration[]
 public class NameChangedMigration extends JsonMigration { // <1>
 
   @Override
@@ -23,4 +22,3 @@ public class NameChangedMigration extends JsonMigration { // <1>
     return json; // <5>
   }
 }
-// end::name-changed-migration[]

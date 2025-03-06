@@ -1,6 +1,5 @@
 package customer.domain;
 
-// tag::class[]
 public record Customer(String email, String name, Address address) {
 
   public Customer withName(String newName) { // <1>
@@ -11,4 +10,3 @@ public record Customer(String email, String name, Address address) {
     return new Customer(email, name, newAddress);
   }
 }
-// end::class[]

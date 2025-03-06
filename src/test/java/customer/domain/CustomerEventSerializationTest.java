@@ -55,13 +55,10 @@ class CustomerEventSerializationTest {
     assertEquals("New York", deserialized.address().city());
   }
 
-  // tag::testing-deserialization[]
   @Test
   public void shouldDeserializeCustomerCreated_V0() throws IOException {
-    // end::testing-deserialization[]
     // saveOldPayload();
 
-    // tag::testing-deserialization[]
     // load serialized bytes and deserialize with the new schema
     var serialized = getClass().getResourceAsStream("/customer-created-old.json").readAllBytes(); //<1>
     CustomerCreated deserialized = SerializationTestkit.deserialize(CustomerCreated.class, serialized); // <2>
@@ -69,15 +66,12 @@ class CustomerEventSerializationTest {
     assertEquals("Wall Street", deserialized.address().street());
     assertEquals("New York", deserialized.address().city());
   }
-  // end::testing-deserialization[]
 
   private static void saveOldPayload() throws IOException {
-    // tag::testing-deserialization-encoding[]
     byte[] serialized = SerializationTestkit.serialize(new CustomerCreatedOld("bob@lightbend.com", "bob", "Wall Street", "New York"));
     var tmpDir = Files.createTempFile("customer-created-old", ".json");
     // save serialized to a file and remove `CustomerCreatedOld`
     Files.write(tmpDir.toAbsolutePath(), serialized); // <1>
-    // end::testing-deserialization-encoding[]
   }
 
 }
