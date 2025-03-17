@@ -1,8 +1,10 @@
 package customer;
 
+import akka.javasdk.DependencyProvider;
 import akka.javasdk.JsonSupport;
 import akka.javasdk.ServiceSetup;
 import akka.javasdk.annotations.Setup;
+import customer.application.CustomerStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +14,12 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NULL
 public class CustomerRegistrySetup implements ServiceSetup {
 
   private static final Logger logger = LoggerFactory.getLogger(CustomerRegistrySetup.class);
+
+  @Override
+  public DependencyProvider createDependencyProvider() {
+    return DependencyProvider.single(new CustomerStore());
+  }
+
 
 
   @Override
