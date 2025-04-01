@@ -1,5 +1,6 @@
 # Build a Customer Registry with Query Capabilities
 
+
 This guide will walk you through the process of creating, retrieving, and updating information from a customer registry service.
 
 ## Prerequisites
