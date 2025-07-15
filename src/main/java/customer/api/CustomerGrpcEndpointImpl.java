@@ -7,9 +7,9 @@ import akka.javasdk.annotations.GrpcEndpoint;
 import akka.javasdk.client.ComponentClient;
 import akka.stream.javadsl.Source;
 import customer.api.proto.*;
+import customer.application.CustomerEntity;
 import customer.application.CustomersByEmailView;
 import customer.application.CustomersByNameView;
-import customer.application.CustomerEntity;
 import customer.domain.CustomerEntry;
 import io.grpc.Status;
 import org.slf4j.Logger;
@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 @GrpcEndpoint // <1>
 public class CustomerGrpcEndpointImpl implements CustomerGrpcEndpoint {
 
+
   private static final Logger log = LoggerFactory.getLogger(CustomerGrpcEndpointImpl.class);
 
   private final ComponentClient componentClient;
@@ -27,13 +28,16 @@ public class CustomerGrpcEndpointImpl implements CustomerGrpcEndpoint {
     this.componentClient = componentClient;
   }
 
+
   @Override
   public CreateCustomerResponse createCustomer(CreateCustomerRequest in) {
     log.info("gRPC request to create customer: {}", in);
-    if (in.getCustomerId().isBlank())
-      throw new IllegalArgumentException("Customer id must not be empty");
+    if (in.getCustomerId().isBlank()) throw new IllegalArgumentException(
+      "Customer id must not be empty"
+    );
 
-    componentClient.forEventSourcedEntity(in.getCustomerId())
+    componentClient
+      .forEventSourcedEntity(in.getCustomerId())
       .method(CustomerEntity::create)
       .invoke(apiToDomain(in.getCustomer()));
 
@@ -43,18 +47,21 @@ public class CustomerGrpcEndpointImpl implements CustomerGrpcEndpoint {
 
   @Override
   public Customer getCustomer(GetCustomerRequest in) {
-    if (in.getCustomerId().isBlank())
-      throw new GrpcServiceException(
-          Status.INVALID_ARGUMENT.augmentDescription("Customer id must not be empty"));
+    if (in.getCustomerId().isBlank()) throw new GrpcServiceException(
+      Status.INVALID_ARGUMENT.augmentDescription("Customer id must not be empty")
+    );
 
     try {
-      var customer = componentClient.forEventSourcedEntity(in.getCustomerId()) // <3>
-          .method(CustomerEntity::getCustomer)
-          .invoke();
+      var customer = componentClient
+        .forEventSourcedEntity(in.getCustomerId()) // <3>
+        .method(CustomerEntity::getCustomer)
+        .invoke();
 
       return domainToApi(customer); // <4>
     } catch (Exception ex) {
-      if (ex.getMessage().contains("No customer found for id")) throw new GrpcServiceException(Status.NOT_FOUND);
+      if (
+        ex.getMessage().contains("No customer found for id")
+      ) throw new GrpcServiceException(Status.NOT_FOUND);
       else throw new RuntimeException(ex);
     }
   }
@@ -62,8 +69,13 @@ public class CustomerGrpcEndpointImpl implements CustomerGrpcEndpoint {
 
   @Override
   public ChangeNameResponse changeName(ChangeNameRequest in) {
-    log.info("gRPC request to change customer [{}] name: {}", in.getCustomerId(), in.getNewName());
-    componentClient.forEventSourcedEntity(in.getCustomerId())
+    log.info(
+      "gRPC request to change customer [{}] name: {}",
+      in.getCustomerId(),
+      in.getNewName()
+    );
+    componentClient
+      .forEventSourcedEntity(in.getCustomerId())
       .method(CustomerEntity::changeName)
       .invoke(in.getNewName());
 
@@ -73,10 +85,15 @@ public class CustomerGrpcEndpointImpl implements CustomerGrpcEndpoint {
   @Acl(deny = @Acl.Matcher(principal = Acl.Principal.ALL))
   @Override
   public ChangeAddressResponse changeAddress(ChangeAddressRequest in) {
-    log.info("gRPC request to change customer [{}] address: {}", in.getCustomerId(), in.getNewAddress());
-    componentClient.forEventSourcedEntity(in.getCustomerId())
-        .method(CustomerEntity::changeAddress)
-        .invoke(apiToDomain(in.getNewAddress()));
+    log.info(
+      "gRPC request to change customer [{}] address: {}",
+      in.getCustomerId(),
+      in.getNewAddress()
+    );
+    componentClient
+      .forEventSourcedEntity(in.getCustomerId())
+      .method(CustomerEntity::changeAddress)
+      .invoke(apiToDomain(in.getNewAddress()));
 
     return ChangeAddressResponse.getDefaultInstance();
   }
@@ -85,9 +102,10 @@ public class CustomerGrpcEndpointImpl implements CustomerGrpcEndpoint {
   // but provides examples of streaming a response
   @Override
   public CustomerList customerByName(CustomerByNameRequest in) {
-    var viewCustomerList = componentClient.forView()
-        .method(CustomersByNameView::getCustomers)
-        .invoke(in.getName());
+    var viewCustomerList = componentClient
+      .forView()
+      .method(CustomersByNameView::getCustomers)
+      .invoke(in.getName());
 
     var apiCustomers = viewCustomerList.customers().stream().map(this::domainToApi).toList();
 
@@ -96,9 +114,10 @@ public class CustomerGrpcEndpointImpl implements CustomerGrpcEndpoint {
 
   @Override
   public CustomerList customerByEmail(CustomerByEmailRequest in) {
-    var viewCustomerList = componentClient.forView()
-        .method(CustomersByEmailView::getCustomers)
-        .invoke(in.getEmail());
+    var viewCustomerList = componentClient
+      .forView()
+      .method(CustomersByEmailView::getCustomers)
+      .invoke(in.getEmail());
 
     var apiCustomers = viewCustomerList.customers().stream().map(this::domainToApi).toList();
     return CustomerList.newBuilder().addAllCustomers(apiCustomers).build();
@@ -108,61 +127,59 @@ public class CustomerGrpcEndpointImpl implements CustomerGrpcEndpoint {
   public Source<CustomerSummary, NotUsed> customerByEmailStream(CustomerByEmailRequest in) {
     // Shows of streaming consumption of a view, transforming
     // each element and passing along to a streamed response
-    var customerSummarySource = componentClient.forView()
-        .stream(CustomersByEmailView::getCustomersStream)
-        .source(in.getEmail());
+    var customerSummarySource = componentClient
+      .forView()
+      .stream(CustomersByEmailView::getCustomersStream)
+      .source(in.getEmail());
 
-    return customerSummarySource.map(c ->
-      CustomerSummary.newBuilder()
-          .setName(c.name())
-          .setEmail(c.email())
-          .build());
+    return customerSummarySource.map(
+      c -> CustomerSummary.newBuilder().setName(c.name()).setEmail(c.email()).build()
+    );
   }
+
 
   // Conversions between the public gRPC API protobuf messages and the internal
   // Java domain classes.
   private customer.domain.Customer apiToDomain(Customer protoCustomer) {
     return new customer.domain.Customer(
-        protoCustomer.getEmail(),
-        protoCustomer.getName(),
-        apiToDomain(protoCustomer.getAddress())
+      protoCustomer.getEmail(),
+      protoCustomer.getName(),
+      apiToDomain(protoCustomer.getAddress())
     );
   }
 
   private customer.domain.Address apiToDomain(Address protoAddress) {
     if (protoAddress == null) return null;
     else {
-      return new customer.domain.Address(
-          protoAddress.getStreet(),
-          protoAddress.getCity()
-      );
+      return new customer.domain.Address(protoAddress.getStreet(), protoAddress.getCity());
     }
   }
 
 
   private Customer domainToApi(customer.domain.Customer domainCustomer) {
     return Customer.newBuilder()
-        .setName(domainCustomer.name())
-        .setEmail(domainCustomer.email())
-        .setAddress(domainToApi(domainCustomer.address()))
-        .build();
+      .setName(domainCustomer.name())
+      .setEmail(domainCustomer.email())
+      .setAddress(domainToApi(domainCustomer.address()))
+      .build();
   }
 
   private Address domainToApi(customer.domain.Address domainAddress) {
     if (domainAddress == null) return null;
     else {
       return Address.newBuilder()
-          .setCity(domainAddress.city())
-          .setStreet(domainAddress.street())
-          .build();
+        .setCity(domainAddress.city())
+        .setStreet(domainAddress.street())
+        .build();
     }
   }
 
+
   private Customer domainToApi(CustomerEntry domainRow) {
     return Customer.newBuilder()
-        .setName(domainRow.name())
-        .setEmail(domainRow.email())
-        .setAddress(domainToApi(domainRow.address()))
-        .build();
+      .setName(domainRow.name())
+      .setEmail(domainRow.email())
+      .setAddress(domainToApi(domainRow.address()))
+      .build();
   }
 }
