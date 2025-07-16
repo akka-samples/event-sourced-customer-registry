@@ -1,9 +1,8 @@
 package customer.domain.schemaevolution;
 
+import akka.javasdk.JsonMigration;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import akka.javasdk.JsonMigration;
-
 import java.util.List;
 
 public class AddressChangedMigration extends JsonMigration {

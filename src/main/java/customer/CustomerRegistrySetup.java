@@ -1,5 +1,7 @@
 package customer;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES;
+
 import akka.javasdk.DependencyProvider;
 import akka.javasdk.JsonSupport;
 import akka.javasdk.ServiceSetup;
@@ -8,10 +10,9 @@ import customer.application.CustomerStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES;
-
 @Setup
 public class CustomerRegistrySetup implements ServiceSetup {
+
 
   private static final Logger logger = LoggerFactory.getLogger(CustomerRegistrySetup.class);
 
@@ -21,11 +22,9 @@ public class CustomerRegistrySetup implements ServiceSetup {
   }
 
 
-
   @Override
   public void onStartup() {
     logger.info("Starting Akka Application");
-      JsonSupport.getObjectMapper()
-            .configure(FAIL_ON_NULL_CREATOR_PROPERTIES, true); // <1>
+    JsonSupport.getObjectMapper().configure(FAIL_ON_NULL_CREATOR_PROPERTIES, true); // <1>
   }
 }
