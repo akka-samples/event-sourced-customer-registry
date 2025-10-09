@@ -1,7 +1,7 @@
 package customer.application;
 
 
-import akka.javasdk.annotations.ComponentId;
+import akka.javasdk.annotations.Component;
 import akka.javasdk.annotations.Consume;
 import akka.javasdk.annotations.Query;
 import akka.javasdk.view.TableUpdater;
@@ -10,7 +10,7 @@ import customer.domain.CustomerEntries;
 import customer.domain.CustomerEntry;
 import customer.domain.CustomerEvent;
 
-@ComponentId("customers-by-name") // <1>
+@Component(id = "customers-by-name") // <1>
 public class CustomersByNameView extends View {
 
   @Consume.FromEventSourcedEntity(CustomerEntity.class)
