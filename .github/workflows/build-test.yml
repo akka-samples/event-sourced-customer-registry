@@ -56,4 +56,4 @@ jobs:
 
       - name: mvn verify
         run: |-
-          mvn verify --no-transfer-progress
+          mvn verify -X --no-transfer-progress 2>&1
