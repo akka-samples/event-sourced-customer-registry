@@ -54,6 +54,9 @@ jobs:
         with:
           jvm: temurin:1.21
 
+      - name: Show Maven settings file
+        run: cat ~/.m2/settings.xml
+
       - name: mvn verify
         run: |-
           mvn verify -X --no-transfer-progress 2>&1
