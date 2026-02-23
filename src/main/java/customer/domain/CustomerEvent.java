@@ -1,6 +1,5 @@
 package customer.domain;
 
-
 import akka.javasdk.annotations.Migration;
 import akka.javasdk.annotations.TypeName;
 
